@@ -1,0 +1,267 @@
+-- Tabela Usuario
+CREATE TABLE Usuario (
+    UserID INTEGER PRIMARY KEY AUTOINCREMENT,
+    UserName TEXT NOT NULL,
+    Email TEXT NOT NULL UNIQUE,
+    Tipo TEXT NOT NULL CHECK (Tipo IN ('Aluno', 'Professor'))
+);
+
+-- Tabela Professor (subclasse de Usuario)
+CREATE TABLE Professor (
+    UserID INTEGER PRIMARY KEY,
+    Diploma TEXT NOT NULL,
+    FOREIGN KEY (UserID) REFERENCES Usuario(UserID)
+        ON DELETE CASCADE
+);
+
+-- Tabela Aluno (subclasse de Usuario)
+CREATE TABLE Aluno (
+    UserID INTEGER PRIMARY KEY,
+    GrauEnsino TEXT NOT NULL,
+    FOREIGN KEY (UserID) REFERENCES Usuario(UserID)
+        ON DELETE CASCADE
+);
+
+-- Tabela Curso
+CREATE TABLE Curso (
+    CourseID INTEGER PRIMARY KEY AUTOINCREMENT,
+    Titulo TEXT NOT NULL
+);
+
+-- Tabela Certificado
+CREATE TABLE Certificado (
+    CertificateID INTEGER PRIMARY KEY AUTOINCREMENT,
+    DataConclusao DATE NOT NULL
+);
+
+-- Tabela Modulo
+CREATE TABLE Modulo (
+    CourseID INTEGER NOT NULL,
+    Assunto TEXT NOT NULL,
+    Nivel TEXT NOT NULL,
+    PRIMARY KEY (CourseID, Assunto),
+    FOREIGN KEY (CourseID) REFERENCES Curso(CourseID)
+        ON DELETE CASCADE
+);
+
+-- Tabela Categoria
+CREATE TABLE Categoria (
+    CategoryID INTEGER PRIMARY KEY AUTOINCREMENT,
+    Nome TEXT NOT NULL
+);
+
+-- Relação Curso-Participante
+CREATE TABLE Relacao_Curso_Participante (
+    AlunoID INTEGER NOT NULL,
+    CursoID INTEGER NOT NULL,
+    ProfessorID INTEGER NOT NULL,
+    PRIMARY KEY (AlunoID, CursoID, ProfessorID),
+    FOREIGN KEY (AlunoID) REFERENCES Aluno(UserID),
+    FOREIGN KEY (CursoID) REFERENCES Curso(CourseID),
+    FOREIGN KEY (ProfessorID) REFERENCES Professor(UserID)
+);
+
+-- Relação Monitoria
+CREATE TABLE Relacao_Monitoria (
+    AlunoID INTEGER NOT NULL,
+    AlunoMonitorID INTEGER NOT NULL,
+    PRIMARY KEY (AlunoID, AlunoMonitorID),
+    FOREIGN KEY (AlunoID) REFERENCES Aluno(UserID)
+        ON DELETE CASCADE,
+    FOREIGN KEY (AlunoMonitorID) REFERENCES Aluno(UserID)
+        ON DELETE CASCADE
+);
+
+-- Relação Curso-Categoria
+CREATE TABLE Relacao_Curso_Categoria (
+    CursoID INTEGER NOT NULL,
+    CategoriaID INTEGER NOT NULL,
+    PRIMARY KEY (CursoID, CategoriaID),
+    FOREIGN KEY (CursoID) REFERENCES Curso(CourseID)
+        ON DELETE CASCADE,
+    FOREIGN KEY (CategoriaID) REFERENCES Categoria(CategoryID)
+        ON DELETE CASCADE
+);
+
+-- Relação Certificação
+CREATE TABLE Relacao_Certificacao (
+    CertificadoID INTEGER NOT NULL,
+    CursoID INTEGER NOT NULL,
+    AlunoID INTEGER NOT NULL,
+    PRIMARY KEY (CertificadoID, AlunoID),
+    FOREIGN KEY (CertificadoID) REFERENCES Certificado(CertificateID)
+        ON DELETE CASCADE,
+    FOREIGN KEY (CursoID) REFERENCES Curso(CourseID)
+        ON DELETE CASCADE,
+    FOREIGN KEY (AlunoID) REFERENCES Aluno(UserID)
+        ON DELETE CASCADE
+);
+
+-- INSERÇÃO DE DADOS FICTICIOS PARA POPULAR AS TABELAS
+
+
+-- Inserindo usuários
+INSERT INTO Usuario (UserName, Email, Tipo) VALUES 
+('Alice Silva', 'alice.silva@example.com', 'Aluno'),
+('Bruno Santos', 'bruno.santos@example.com', 'Aluno'),
+('Carlos Almeida', 'carlos.almeida@example.com', 'Professor'),
+('Daniela Costa', 'daniela.costa@example.com', 'Professor'),
+('Eduardo Lima', 'eduardo.lima@example.com', 'Aluno'),
+('Fernanda Souza', 'fernanda.souza@example.com', 'Aluno'),
+('Gabriela Mendes', 'gabriela.mendes@example.com', 'Professor'),
+('Hugo Rocha', 'hugo.rocha@example.com', 'Aluno'),
+('Isabela Martins', 'isabela.martins@example.com', 'Professor'),
+('João Pereira', 'joao.pereira@example.com', 'Aluno'),
+('Karina Ferreira', 'karina.ferreira@example.com', 'Aluno'),
+('Lucas Oliveira', 'lucas.oliveira@example.com', 'Professor'),
+('Mariana Silva', 'mariana.silva@example.com', 'Aluno'),
+('Nathalia Costa', 'nathalia.costa@example.com', 'Aluno'),
+('Otávio Lima', 'otavio.lima@example.com', 'Professor'),
+('Paula Santos', 'paula.santos@example.com', 'Aluno'),
+('Rafael Mendes', 'rafael.mendes@example.com', 'Professor'),
+('Sara Almeida', 'sara.almeida@example.com', 'Aluno'),
+('Thiago Souza', 'thiago.souza@example.com', 'Aluno'),
+('Ursula Rocha', 'ursula.rocha@example.com', 'Aluno'),
+('Victor Martins', 'victor.martins@example.com', 'Aluno'),
+('Wagner Pereira', 'wagner.pereira@example.com', 'Professor');
+
+-- Inserindo professores
+INSERT INTO Professor (UserID, Diploma) VALUES 
+(3, 'Mestrado em Educação'),
+(4, 'Doutorado em Ciências'),
+(7, 'Mestrado em Linguística'),
+(9, 'Doutorado em História'),
+(12, 'Pós-Graduação em Matemática'),
+(15, 'Doutorado em Física'),
+(18, 'Mestrado em Química'),
+(23, 'Mestrado em Computação');
+
+-- Inserindo alunos
+INSERT INTO Aluno (UserID, GrauEnsino) VALUES 
+(1, 'Ensino Médio'),
+(2, 'Ensino Médio'),
+(5, 'Ensino Fundamental'),
+(6, 'Ensino Médio'),
+(8, 'Ensino Fundamental'),
+(10, 'Ensino Médio'),
+(11, 'Ensino Fundamental'),
+(13, 'Ensino Médio'),
+(14, 'Ensino Fundamental'),
+(16, 'Ensino Médio'),
+(17, 'Ensino Fundamental'),
+(19, 'Ensino Médio'),
+(20, 'Ensino Médio'),
+(21, 'Ensino Médio'),
+(22, 'Ensino Médio');
+
+-- Inserindo cursos
+INSERT INTO Curso (Titulo) VALUES 
+('Matemática Básica'),
+('Física Moderna'),
+('Introdução à Programação'),
+('História do Brasil'),
+('Química Orgânica'),
+('Redação e Comunicação'),
+('Biologia Celular'),
+('Engenharia de Software'),
+('Álgebra Linear'),
+('Cálculo Diferencial'),
+('Filosofia Moderna');
+
+-- Inserindo módulos
+INSERT INTO Modulo (CourseID, Assunto, Nivel) VALUES 
+(1, 'Números Inteiros', 'Iniciante'),
+(1, 'Frações', 'Intermediário'),
+(2, 'Teoria da Relatividade', 'Avançado'),
+(3, 'Estruturas Condicionais', 'Iniciante'),
+(3, 'Estruturas de Dados', 'Intermediário'),
+(4, 'Brasil Colonial', 'Iniciante'),
+(4, 'Brasil Contemporâneo', 'Avançado'),
+(5, 'Hidrocarbonetos', 'Intermediário'),
+(6, 'Técnicas de Redação', 'Iniciante'),
+(7, 'Estrutura Celular', 'Iniciante'),
+(8, 'Modelagem de Sistemas', 'Avançado'),
+(9, 'Vetores e Matrizes', 'Intermediário'),
+(10, 'Derivadas e Integrais', 'Avançado'),
+(11, 'Kant e o Iluminismo', 'Iniciante');
+
+-- Inserindo categorias
+INSERT INTO Categoria (Nome) VALUES 
+('Ciências Exatas'), ('Humanas'), ('Linguagens'), 
+('Biológicas'), ('Tecnologia'), ('Engenharia'), 
+('Química'), ('Física'), ('História'), 
+('Filosofia'), ('Programação'), ('Matemática'), 
+('Cálculo'), ('Redação'), ('Software'), 
+('Biologia'), ('Educação'), ('Ensino Médio'), 
+('Ensino Fundamental'), ('Graduação'), 
+('EAD'), ('Presencial'), ('Avançado'), 
+('Intermediário'), ('Iniciante'), 
+('Pós-Graduação'), ('Doutorado'), ('Ensino Superior'), 
+('Técnico'), ('Científico'), ('Acadêmico'), 
+('História da Arte'), ('Geografia'), ('Estatística'), 
+('Computação'), ('Engenharia Civil'), ('Eletrônica'), 
+('Machine Learning'), ('Redes de Computadores'), ('Robótica');
+
+-- Inserindo certificados
+INSERT INTO Certificado (DataConclusao) VALUES 
+('2024-01-15'), ('2024-02-20'), ('2024-03-10'), 
+('2024-04-12'), ('2024-05-25'), ('2024-06-18'), 
+('2024-07-14'), ('2024-08-09'), ('2024-09-05'), 
+('2024-10-30'), ('2024-11-10');
+
+-- Relacionando cursos aos participantes (alunos e professores)
+INSERT INTO Relacao_Curso_Participante (AlunoID, CursoID, ProfessorID) VALUES 
+(1, 1, 3),
+(2, 1, 3),
+(5, 2, 4),
+(6, 3, 7),
+(8, 3, 7),
+(10, 4, 9),
+(11, 5, 15),
+(13, 6, 18),
+(14, 7, 23),
+(16, 8, 23),
+(17, 9, 12),
+(19, 10, 15),
+(20, 11, 23),
+(21, 2, 4),
+(22, 3, 7);
+
+-- Relacionando cursos às categorias
+INSERT INTO Relacao_Curso_Categoria (CursoID, CategoriaID) VALUES 
+(1, 12), -- Matemática Básica -> Matemática
+(2, 8),  -- Física Moderna -> Física
+(3, 11), -- Introdução à Programação -> Programação
+(4, 9),  -- História do Brasil -> História
+(5, 7),  -- Química Orgânica -> Química
+(6, 14), -- Redação e Comunicação -> Redação
+(7, 4),  -- Biologia Celular -> Biológicas
+(8, 10), -- Engenharia de Software -> Engenharia
+(9, 12), -- Álgebra Linear -> Matemática
+(10, 13), -- Cálculo Diferencial -> Cálculo
+(11, 10); -- Filosofia Moderna -> Filosofia
+
+-- Relacionando certificados aos cursos e alunos
+INSERT INTO Relacao_Certificacao (CertificadoID, CursoID, AlunoID) VALUES 
+(1, 1, 1),
+(2, 1, 2),
+(3, 3, 6),
+(4, 4, 10),
+(5, 5, 11),
+(6, 6, 13),
+(7, 7, 14),
+(8, 8, 16),
+(9, 9, 17),
+(10, 10, 19),
+(11, 11, 20);
+
+-- Relacionando monitorias (alunos ajudam outros alunos)
+INSERT INTO Relacao_Monitoria (AlunoID, AlunoMonitorID) VALUES 
+(1, 13), -- Aluno 1 é monitorado pelo Aluno 13
+(2, 14), -- Aluno 2 é monitorado pelo Aluno 14
+(6, 16), -- Aluno 6 é monitorado pelo Aluno 16
+(10, 19), -- Aluno 10 é monitorado pelo Aluno 19
+(11, 20), -- Aluno 11 é monitorado pelo Aluno 20
+(8, 1),  -- Aluno 8 é monitorado pelo Aluno 1
+(5, 2);  -- Aluno 5 é monitorado pelo Aluno 2
+
